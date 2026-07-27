@@ -1,0 +1,185 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum HeroClass {
+  TANK
+  WARRIOR
+  ASSASSIN
+  MAGE
+  MARKSMAN
+  SUPPORT
+}
+
+model Hero {
+  id          Int       @id @default(autoincrement())
+  nameEnglish String
+  nameChinese String
+  class       HeroClass
+
+  picks Pick[]
+  bans  Ban[]
+
+  @@index([class])
+}
+
+model Lane {
+  id          Int    @id @default(autoincrement())
+  nameEnglish String
+  nameChinese String
+
+  picks Pick[]
+}
+
+// Reusable across every competition/season, e.g. domestic: Regular Season,
+// Playoffs. Global majors: Group Stage, Ro8, Ro4, Final. `order` controls
+// display sort so stages always appear in the right sequence.
+model Stage {
+  id    Int    @id @default(autoincrement())
+  name  String
+  order Int
+
+  series Series[]
+}
+
+model Team {
+  id     Int    @id @default(autoincrement())
+  name   String
+  region String
+
+  teamSeasons   TeamSeason[]
+  seriesAsTeamA Series[]     @relation("SeriesTeamA")
+  seriesAsTeamB Series[]     @relation("SeriesTeamB")
+  matchesAsBlue Match[]      @relation("MatchBlueTeam")
+  matchesAsRed  Match[]      @relation("MatchRedTeam")
+  matchesWon    Match[]      @relation("MatchWinner")
+  picks         Pick[]
+  bans          Ban[]
+}
+
+model Competition {
+  id     Int    @id @default(autoincrement())
+  name   String
+  region String
+
+  seasons Season[]
+}
+
+model Season {
+  id            Int      @id @default(autoincrement())
+  competitionId Int
+  year          Int
+  split         String?
+  isOngoing     Boolean  @default(false)
+
+  competition Competition  @relation(fields: [competitionId], references: [id])
+  teamSeasons TeamSeason[]
+  series      Series[]
+
+  @@unique([competitionId, year, split])
+  @@index([isOngoing])
+}
+
+// Explicit roster — NOT derived from Series. Lets the data-entry team
+// dropdown be scoped to "registered for this season" before any series exists.
+model TeamSeason {
+  teamId   Int
+  seasonId Int
+
+  team   Team   @relation(fields: [teamId], references: [id])
+  season Season @relation(fields: [seasonId], references: [id])
+
+  @@id([teamId, seasonId])
+  @@index([seasonId])
+}
+
+// Just the two participants; no color semantics here (see Match). Winner is
+// always derived by counting Match.winnerTeamId, never stored.
+model Series {
+  id        Int      @id @default(autoincrement())
+  seasonId  Int
+  stageId   Int
+  teamAId   Int
+  teamBId   Int
+  createdAt DateTime @default(now())
+
+  season  Season  @relation(fields: [seasonId], references: [id])
+  stage   Stage   @relation(fields: [stageId], references: [id])
+  teamA   Team    @relation("SeriesTeamA", fields: [teamAId], references: [id])
+  teamB   Team    @relation("SeriesTeamB", fields: [teamBId], references: [id])
+  matches Match[]
+
+  @@index([seasonId])
+  @@index([stageId])
+  @@index([teamAId])
+  @@index([teamBId])
+}
+
+// Side is per-game (can swap within a series). winnerTeamId must equal
+// blueTeamId or redTeamId — DB CHECK constraint added via raw-SQL migration.
+model Match {
+  id           Int      @id @default(autoincrement())
+  seriesId     Int
+  gameNumber   Int
+  blueTeamId   Int
+  redTeamId    Int
+  winnerTeamId Int
+  createdAt    DateTime @default(now())
+
+  series     Series @relation(fields: [seriesId], references: [id])
+  blueTeam   Team   @relation("MatchBlueTeam", fields: [blueTeamId], references: [id])
+  redTeam    Team   @relation("MatchRedTeam", fields: [redTeamId], references: [id])
+  winnerTeam Team   @relation("MatchWinner", fields: [winnerTeamId], references: [id])
+  picks      Pick[]
+  bans       Ban[]
+
+  @@unique([seriesId, gameNumber])
+  @@index([seriesId])
+}
+
+// pickOrder = overall draft sequence (1-10) for this match. Side is derived
+// by comparing teamId to the match's blueTeamId/redTeamId, not stored here.
+model Pick {
+  id        Int @id @default(autoincrement())
+  matchId   Int
+  teamId    Int
+  heroId    Int
+  laneId    Int
+  pickOrder Int
+
+  match Match @relation(fields: [matchId], references: [id])
+  team  Team  @relation(fields: [teamId], references: [id])
+  hero  Hero  @relation(fields: [heroId], references: [id])
+  lane  Lane  @relation(fields: [laneId], references: [id])
+
+  @@unique([matchId, pickOrder])
+  @@index([matchId, heroId, laneId])
+}
+
+// No laneId — a ban never gets a lane assignment.
+model Ban {
+  id       Int @id @default(autoincrement())
+  matchId  Int
+  teamId   Int
+  heroId   Int
+  banOrder Int
+
+  match Match @relation(fields: [matchId], references: [id])
+  team  Team  @relation(fields: [teamId], references: [id])
+  hero  Hero  @relation(fields: [heroId], references: [id])
+
+  @@unique([matchId, banOrder])
+  @@index([matchId, heroId])
+}
