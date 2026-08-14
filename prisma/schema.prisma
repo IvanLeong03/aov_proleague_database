@@ -23,6 +23,16 @@ enum HeroClass {
   SUPPORT
 }
 
+// Which side of a double-elimination bracket this series belongs to. Lives on Series,
+// not Stage — a broad stage like "Quarterfinals" can contain both winner- and
+// loser-bracket games at once, so the side has to be tagged per-series. Null for any
+// series outside a double-elimination structure (single-elim formats, group/Swiss
+// stages, the Final).
+enum BracketSide {
+  WINNER
+  LOSER
+}
+
 model Hero {
   id          Int       @id @default(autoincrement())
   nameEnglish String
@@ -32,6 +42,7 @@ model Hero {
   picks Pick[]
   bans  Ban[]
 
+  @@unique([nameEnglish])
   @@index([class])
 }
 
@@ -41,23 +52,31 @@ model Lane {
   nameChinese String
 
   picks Pick[]
+
+  @@unique([nameEnglish])
 }
 
 // Reusable across every competition/season, e.g. domestic: Regular Season,
 // Playoffs. Global majors: Group Stage, Ro8, Ro4, Final. `order` controls
 // display sort so stages always appear in the right sequence.
 model Stage {
-  id    Int    @id @default(autoincrement())
-  name  String
-  order Int
+  id                    Int     @id @default(autoincrement())
+  nameEnglish           String
+  nameChinese           String
+  order                 Int
+  countsTowardStandings Boolean @default(true)
+  winsToQualify         Int?
 
   series Series[]
+
+  @@unique([nameEnglish])
 }
 
 model Team {
-  id     Int    @id @default(autoincrement())
-  name   String
-  region String
+  id           Int    @id @default(autoincrement())
+  name         String
+  region       String
+  abbreviation String @unique
 
   teamSeasons   TeamSeason[]
   seriesAsTeamA Series[]     @relation("SeriesTeamA")
@@ -70,9 +89,10 @@ model Team {
 }
 
 model Competition {
-  id     Int    @id @default(autoincrement())
-  name   String
-  region String
+  id        Int    @id @default(autoincrement())
+  name      String
+  region    String
+  shortCode String @unique
 
   seasons Season[]
 }
@@ -108,12 +128,14 @@ model TeamSeason {
 // Just the two participants; no color semantics here (see Match). Winner is
 // always derived by counting Match.winnerTeamId, never stored.
 model Series {
-  id        Int      @id @default(autoincrement())
-  seasonId  Int
-  stageId   Int
-  teamAId   Int
-  teamBId   Int
-  createdAt DateTime @default(now())
+  id          Int          @id @default(autoincrement())
+  seasonId    Int
+  stageId     Int
+  teamAId     Int
+  teamBId     Int
+  date        DateTime     @db.Date
+  bracketSide BracketSide?
+  createdAt   DateTime     @default(now())
 
   season  Season  @relation(fields: [seasonId], references: [id])
   stage   Stage   @relation(fields: [stageId], references: [id])
@@ -125,6 +147,7 @@ model Series {
   @@index([stageId])
   @@index([teamAId])
   @@index([teamBId])
+  @@index([date])
 }
 
 // Side is per-game (can swap within a series). winnerTeamId must equal

@@ -1,0 +1,9 @@
+nameEnglish,nameChinese,order,countsTowardStandings,winsToQualify
+Regular Season,例行賽,1,true,
+Playoffs,季後賽,2,false,
+Group Stage,小組賽,3,true,
+Swiss Stage,瑞士輪,3,true,3
+Playoff Semifinal,準決賽,6,false,
+Quarterfinals,八強賽,10,false,
+Semifinals,四強賽,11,false,
+Final,總決賽,12,false,
