@@ -2,7 +2,71 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { seasonSlug } from "@/lib/seasonSlug";
-import { heroSlug } from "@/lib/heroSlug";
+import { topHeroes } from "@/lib/heroStats";
+import { HeroLeaderboard } from "./HeroLeaderboard";
+import { pickName } from "@/lib/language";
+import { getLanguage } from "@/lib/getLanguage";
+
+
+const labels = {
+    fixtures: {
+        "en": "Fixtures",
+        "zh": "賽程"
+    },
+    noMatches: {
+        "en": "No matches yet.",
+        "zh": "未進行比賽"
+    },
+    standings: {
+        "en": "Standings",
+        "zh": "排行榜"
+    },
+    team: {
+        "en": "Team",
+        "zh": "隊伍"
+    },
+    series: {
+        "en": "Series",
+        "zh": "大分"
+    },
+    games: {
+        "en": "Games",
+        "zh": "小分"
+    },
+    champions: {
+        "en": "Champions",
+        "zh": "冠軍"
+    },
+    runnerUp: {
+        "en": "Runner-up",
+        "zh": "亞軍"
+    },
+    standingsDesc: {
+        "en": "Regular season/Swiss stage; sorted by series record, then game differential, then head-to-head",
+        "zh": "例行賽/瑞士倫: 按大分，小分，對賽成績排序"
+    },
+    heroStats: {
+        "en": "Hero stats",
+        "zh": "英雄數據"
+    },
+    mostPicks: {
+        "en": "Most picks",
+        "zh": "選用次數"
+    },
+    mostBans: {
+        "en": "Most bans",
+        "zh": "禁用次數"
+    },
+    showComplete: {
+        "en": "Show complete statistics",
+        "zh": "顯示完整數據"
+    },
+    ongoing: {
+        "en": "Ongoing",
+        "zh": "賽事進行中"
+    }
+}
+
 
 export default async function SeasonPage({
     params,
@@ -41,7 +105,7 @@ export default async function SeasonPage({
         notFound();
     }
 
-    const [picks, bans] = await Promise.all([
+    const [picks, bans, lang] = await Promise.all([
         prisma.pick.findMany({
             where: { match: { series: { seasonId: season.id } } },
             include: { hero: true },
@@ -50,6 +114,7 @@ export default async function SeasonPage({
             where: { match: { series: { seasonId: season.id } } },
             include: { hero: true },
         }),
+        getLanguage(),
     ]);
 
     const standingsSeries = season.series.filter((s) => s.stage.countsTowardStandings);
@@ -59,45 +124,80 @@ export default async function SeasonPage({
     }));
     const standings = sortStandings(standingsEntries, standingsSeries);
     const qualifyThreshold = getQualifyThreshold(standingsSeries);
+    const championship = getChampionship(season.series);
 
-    const mostPicked = topHeroes(picks);
-    const mostBanned = topHeroes(bans);
+    const mostPicked = topHeroes(picks, 5);
+    const mostBanned = topHeroes(bans, 5);
 
     return (
-        <main className="w-4/5 mx-auto my-8">
+        <main className="w-4/5 mx-auto my-16">
             <Link href={`/competitions/${season.competition.shortCode}`} className="text-sm text-gray-500 hover:underline">
-                &larr; {season.competition.name}
+                &larr; {season.competition.shortCode}
             </Link>
-            <h1 className="mt-1 flex items-center gap-2 text-xl font-medium">
+            <h1 className="mt-1 flex items-center gap-4 xl:gap-8 text-xl xl:text-2xl font-bold">
                 {season.competition.name} {season.year} {season.split ?? ""}
                 {season.isOngoing && (
-                    <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700">Ongoing</span>
+                    <span className="rounded-full bg-green-200 px-2 py-0.5 text-xs xl:text-sm text-green-700">{labels.ongoing[lang]}</span>
                 )}
             </h1>
 
+            <div className="my-4 text-sm text-gray-400 flex-col justify-start">
+                <p>
+                    <span className={`mr-2 inline-block ${ lang === 'en' ? "w-20" : "w-8"}`}>
+                        {labels.champions[lang]}:
+                    </span>
+                    <span>
+                        {championship ? (
+                            <Link href={`/teams/${championship.champion.abbreviation}`} className="text-gray-200 hover:underline">
+                                {championship.champion.name}
+                            </Link>
+                        ) : (
+                            "N/A"
+                        )}
+                    </span>
+                </p>
+                <p>
+                    <span className={`mr-2 inline-block ${ lang === 'en' ? "w-20" : "w-8"}`}>
+                        {labels.runnerUp[lang]}:
+                    </span>
+                    <span>
+                        {championship ? (
+                        <Link href={`/teams/${championship.runnerUp.abbreviation}`} className="text-gray-200 hover:underline">
+                            {championship.runnerUp.name}
+                        </Link>
+                        ) : (
+                            "N/A"
+                        )}
+                    </span>
+                </p>
+                
+            </div>
+
             <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-24">
                 <section>
-                    <h2 className="text-lg font-semibold">Standings</h2>
+                    <h2 className="text-lg font-semibold">{labels.standings[lang]}</h2>
                     <p className="mt-1 text-xs xl:text-sm text-gray-400">
-                        Excludes Playoffs/Knockout Stage &middot; series record, then game differential, then head-to-head
+                        {labels.standingsDesc[lang]}
                     </p>
                     <table className="mt-2 w-full">
                         <thead>
-                            <tr className="text-left text-lg text-gray-400 font-medium tracking-tight">
-                                <th>Team</th>
-                                <th >Series</th>
-                                <th>Games</th>
+                            <tr className="text-left text-lg text-gray-400 font-medium tracking-tight border-b border-white/80">
+                                <th>{labels.team[lang]}</th>
+                                <th>{labels.series[lang]}</th>
+                                <th>{labels.games[lang]}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {standings.map(({ team, record }) => (
-                                <tr key={team.id} className="border-t border-white/60">
+                                <tr key={team.id} className="border-t border-dotted border-white/60">
                                     <td className="py-1">
-                                        <Link href={`/teams/${team.abbreviation}`} className="hover:underline">
+                                        <Link
+                                            href={`/teams/${team.abbreviation}`} 
+                                            className={`hover:underline ${qualifyThreshold !== null && record.seriesLosses >= qualifyThreshold ? "text-gray-500 line-through" : ""}`}
+                                        >
                                             {team.name}
                                         </Link>
                                         {qualifyThreshold !== null && record.seriesWins >= qualifyThreshold && <span className="text-green-300 mx-1">(Q)</span>}
-                                        {qualifyThreshold !== null && record.seriesLosses >= qualifyThreshold && " (E)"}
                                     </td>
                                     <td className="py-1">
                                         {record.seriesWins}-{record.seriesLosses}
@@ -112,27 +212,37 @@ export default async function SeasonPage({
                 </section>
 
                 <section>
-                    <h2 className="text-lg font-semibold">Hero stats</h2>
+                    <h2 className="text-lg font-semibold">{labels.heroStats[lang]}</h2>
                     <div className="grid grid-cols-2 mt-4 gap-8">
                         <div className="pr-4">
-                            <h3 className="font-medium text-gray-400">Most picked</h3>
-                            <HeroLeaderboard rows={mostPicked} />
+                            <h3 className="font-medium text-gray-400">{labels.mostPicks[lang]}</h3>
+                            <HeroLeaderboard rows={mostPicked} lang={lang} />
+                            <Link
+                                href={`/competitions/${season.competition.shortCode}/${seasonSlugParam}/heroes?stat=picks`}
+                                className="mt-2 inline-block text-xs text-gray-500 hover:underline"
+                            >
+                                {labels.showComplete[lang]}
+                            </Link>
                         </div>
                         <div className="pr-4">
-                            <h3 className="font-medium text-gray-400">Most banned</h3>
-                            <HeroLeaderboard rows={mostBanned} />
+                            <h3 className="font-medium text-gray-400">{labels.mostBans[lang]}</h3>
+                            <HeroLeaderboard rows={mostBanned} lang={lang} />
+                            <Link
+                                href={`/competitions/${season.competition.shortCode}/${seasonSlugParam}/heroes?stat=bans`}
+                                className="mt-2 inline-block text-xs text-gray-500 hover:underline"
+                            >
+                                {labels.showComplete[lang]}
+                            </Link>
                         </div>
-
-                    </div>
-                    
+                    </div>                    
                 </section>
             </div>
 
-            <h2 className="mt-16 text-lg font-semibold">Fixtures</h2>
-            {season.series.length === 0 && <p className="mt-1 text-sm text-gray-500">No series yet.</p>}
+            <h2 className="mt-16 text-lg font-semibold">{labels.fixtures[lang]}</h2>
+            {season.series.length === 0 && <p className="my-4 text-gray-500">{labels.noMatches[lang]}</p>}
             {groupByStage(season.series).map(({ stage, series }) => (
                 <div key={stage.id} className="my-8">
-                    <h3 className="font-medium text-gray-400 my-2">{stage.nameEnglish}</h3>
+                    <h3 className="font-medium text-gray-400 my-2">{pickName(lang, stage.nameEnglish, stage.nameChinese)}</h3>
 
                     <ul className="my-2 space-y-1">
                         {groupByDate(series).map(({ date, series }) => (
@@ -148,15 +258,15 @@ export default async function SeasonPage({
                                                     href={`/competitions/${season.competition.shortCode}/series/${s.id}`}
                                                     className="flex justify-between py-2 hover:bg-gray-600"
                                                 >
-                                                    <span>
-                                                        <span className={`${aWins > bWins ? "font-bold" : "brightness-75"}`}>
+                                                    <span className="flex justify-center">
+                                                        <span className={`${aWins > bWins ? "font-bold" : "brightness-75"} inline-block w-32 xl:w-60`}>
                                                             {s.teamA.name}
                                                         </span>
                                                         
-                                                        <span className="mx-2">
+                                                        <span className="mx-1 xl:mx-2 inline-block">
                                                             {aWins}:{bWins}  
                                                         </span>
-                                                        <span className={`${bWins > aWins ? "font-bold" : "brightness-75"}`}>
+                                                        <span className={`${bWins > aWins ? "font-bold" : "brightness-75"} inline-block w-32 xl:w-60 text-right`}>
                                                             {s.teamB.name}
                                                         </span>                                                        
                                                     </span>                                                    
@@ -172,24 +282,6 @@ export default async function SeasonPage({
                 </div>
             ))}
         </main>
-    );
-}
-
-function HeroLeaderboard({ rows }: { rows: { hero: { id: number; nameEnglish: string }; count: number }[] }) {
-    if (rows.length === 0) {
-        return <p className="mt-1 text-sm text-gray-500">No data yet.</p>;
-    }
-    return (
-        <ol className="mt-1 space-y-1">
-            {rows.map((row, i) => (
-                <li key={row.hero.id} className="flex justify-between text-lg">
-                    <span>
-                        {i + 1}. <Link href={`/heroes/${heroSlug(row.hero.nameEnglish)}`} className="hover:underline">{row.hero.nameEnglish}</Link>
-                    </span>
-                    <span className="text-gray-400">{row.count}</span>
-                </li>
-            ))}
-        </ol>
     );
 }
 
@@ -213,6 +305,32 @@ function computeRecord<T extends { teamAId: number; teamBId: number; matches: { 
     }
 
     return { seriesWins, seriesLosses, gameWins, gameLosses };
+}
+
+// Season champion/runner-up is never stored — derived from whichever series is tagged
+// the "Final" stage, same principle as everywhere else in this schema (series winners are
+// always counted from Match.winnerTeamId, never stored). Returns null before the Final has
+// been played (no Final series yet, or it exists with no matches recorded), rendered as N/A.
+function getChampionship<
+    T extends {
+        stage: { nameEnglish: string };
+        teamAId: number;
+        teamBId: number;
+        teamA: { name: string; abbreviation: string };
+        teamB: { name: string; abbreviation: string };
+        matches: { winnerTeamId: number }[];
+    },
+>(series: T[]) {
+    const final = series.find((s) => s.stage.nameEnglish === "Final");
+    if (!final || final.matches.length === 0) return null;
+
+    const aWins = final.matches.filter((m) => m.winnerTeamId === final.teamAId).length;
+    const bWins = final.matches.length - aWins;
+    if (aWins === bWins) return null;
+
+    return aWins > bWins
+        ? { champion: final.teamA, runnerUp: final.teamB }
+        : { champion: final.teamB, runnerUp: final.teamA };
 }
 
 type Record = { seriesWins: number; seriesLosses: number; gameWins: number; gameLosses: number };
@@ -287,19 +405,7 @@ function breakTieHeadToHead(group: StandingsEntry[], series: SeriesForTiebreak[]
     });
 }
 
-function topHeroes(items: { hero: { id: number; nameEnglish: string } }[], n = 5) {
-    const counts = new Map<number, { hero: { id: number; nameEnglish: string }; count: number }>();
-    for (const item of items) {
-        const entry = counts.get(item.hero.id) ?? { hero: item.hero, count: 0 };
-        entry.count++;
-        counts.set(item.hero.id, entry);
-    }
-    return Array.from(counts.values())
-        .sort((a, b) => b.count - a.count)
-        .slice(0, n);
-}
-
-function groupByStage<T extends { stage: { id: number; nameEnglish: string; order: number } }>(series: T[]) {
+function groupByStage<T extends { stage: { id: number; nameEnglish: string; nameChinese: string; order: number } }>(series: T[]) {
     const byStage = new Map<number, { stage: T["stage"]; series: T[] }>();
     for (const s of series) {
         const existing = byStage.get(s.stage.id);
@@ -312,7 +418,7 @@ function groupByStage<T extends { stage: { id: number; nameEnglish: string; orde
     return Array.from(byStage.values()).sort((a, b) => b.stage.order - a.stage.order);
 }
 
-function groupByDate<T extends { date: Date }>(series: T[]) {
+function groupByDate<T extends { date: Date; id: number }>(series: T[]) {
     const byDate = new Map<string, { date: Date; series: T[] }>();
     for (const s of series) {
         const key = s.date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
@@ -322,6 +428,9 @@ function groupByDate<T extends { date: Date }>(series: T[]) {
         } else {
             byDate.set(key, { date: s.date, series: [s] });
         }
+    }
+    for (const group of byDate.values()) {
+        group.series.sort((a, b) => b.id - a.id);
     }
     return Array.from(byDate.values()).sort((a, b) => b.date.getTime() - a.date.getTime());
 }

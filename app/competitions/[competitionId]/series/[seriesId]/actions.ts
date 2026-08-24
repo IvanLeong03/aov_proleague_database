@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { isAdminMode } from "@/lib/admin";
 
 type CreateMatchInput = {
     seriesId: number;
@@ -16,6 +17,10 @@ type CreateMatchInput = {
 };
 
 export async function createMatch(input: CreateMatchInput) {
+    if (!isAdminMode()) {
+        throw new Error("Not available in read-only mode.");
+    }
+
     const { seriesId, gameNumber, blueTeamId, redTeamId, winnerTeamId, bans, picks } = input;
 
     if (winnerTeamId !== blueTeamId && winnerTeamId !== redTeamId) {
@@ -61,6 +66,10 @@ export async function createMatch(input: CreateMatchInput) {
 }
 
 export async function deleteMatch(matchId: number, seriesId: number, competitionId: string) {
+    if (!isAdminMode()) {
+        throw new Error("Not available in read-only mode.");
+    }
+
     await prisma.$transaction(async (tx) => {
         await tx.pick.deleteMany({ where: { matchId } });
         await tx.ban.deleteMany({ where: { matchId } });
@@ -71,6 +80,10 @@ export async function deleteMatch(matchId: number, seriesId: number, competition
 }
 
 export async function deleteSeries(seriesId: number, competitionId: string) {
+    if (!isAdminMode()) {
+        throw new Error("Not available in read-only mode.");
+    }
+
     await prisma.$transaction(async (tx) => {
         const matches = await tx.match.findMany({ where: { seriesId }, select: { id: true } });
         const matchIds = matches.map((match) => match.id);

@@ -63,8 +63,12 @@ export function AddMatchForm({
         }
 
         const bans = [
-            ...bansBlue.map((heroId, i) => ({ teamId: blueTeamId, heroId: heroId as number, banOrder: i + 1 })),
-            ...bansRed.map((heroId, i) => ({ teamId: redTeamId, heroId: heroId as number, banOrder: i + 5 })),
+            ...bansBlue
+                .filter((heroId): heroId is number => heroId !== null)
+                .map((heroId, i) => ({ teamId: blueTeamId, heroId, banOrder: i + 1 })),
+            ...bansRed
+                .filter((heroId): heroId is number => heroId !== null)
+                .map((heroId, i) => ({ teamId: redTeamId, heroId, banOrder: i + 5 })),
         ];
         const picks = [
             ...picksBlue.map((heroId, i) => ({ teamId: blueTeamId, heroId: heroId as number, laneId: lanes[i].id, pickOrder: i + 1 })),

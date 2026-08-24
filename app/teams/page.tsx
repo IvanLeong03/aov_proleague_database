@@ -1,8 +1,19 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { TeamCard } from "./TeamCard";
+import { getLanguage } from "@/lib/getLanguage";
 
-const REGION_ORDER = ["Taiwan", "Thailand", "Vietnam", "Indonesia"];
+const REGION_ORDER = ["Taiwan", "Thailand", "Vietnam"];
+const labels = {
+    teams: {
+        "en": "Teams",
+        "zh": "參賽隊伍"
+    },
+    other: {
+        "en": "Other region",
+        "zh": "其他賽區"
+    }
+}
 
 export default async function TeamsPage() {
     const teams = await prisma.team.findMany({
@@ -22,9 +33,11 @@ export default async function TeamsPage() {
         "Vietnam": "(AOG)"
     };
 
+    const lang = await getLanguage();
+
     return (
-        <main className="w-4/5 mx-auto my-8">
-            <h1 className="text-xl font-medium">Teams</h1>
+        <main className="w-4/5 mx-auto my-16">
+            <h1 className="text-xl xl:text-2xl font-bold mb-8">{labels.teams[lang]}</h1>
 
             {byRegion.map(({ region, teams: regionTeams }) => (
                 <section key={region} className="mb-24">
@@ -46,7 +59,7 @@ export default async function TeamsPage() {
 
             {otherTeams.length > 0 && (
                 <section className="mt-6">
-                    <h2 className="text-sm font-medium text-gray-500">Other</h2>
+                    <h2 className="text-sm font-medium text-gray-500">{labels.other[lang]}</h2>
                     <ul className="mt-2 space-y-1">
                         {otherTeams.map((team) => (
                             <li key={team.id}>

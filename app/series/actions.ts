@@ -2,8 +2,13 @@
 
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { isAdminMode } from "@/lib/admin";
 
 export async function createSeries(formData: FormData) {
+  if (!isAdminMode()) {
+    throw new Error("Not available in read-only mode.");
+  }
+
   const competitionId = Number(formData.get("competitionId"));
   const seasonId = Number(formData.get("seasonId"));
   const stageId = Number(formData.get("stageId"));
