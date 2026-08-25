@@ -118,7 +118,7 @@ export async function NavBar() {
                 </div>
             </div>
 
-            <div className="hidden md:flex items-center gap-4 ml-auto">
+            <div className="hidden md:flex items-center gap-4 xl:gap-6 ml-auto">
                 <SearchBar items={searchItems} lang={lang} className="w-56" />
                 <LanguageToggle current={lang} />
             </div>

@@ -165,9 +165,9 @@ function MatchDetails({
     const redBans = match.bans.filter((ban) => ban.teamId === match.redTeamId);
 
     return (
-        <div className="mt-3 space-y-4">
+        <div className="mt-3">
             <div>
-                <div className="grid grid-cols-[1fr_auto_1fr] font-medium text-gray-400">
+                <div className="grid grid-cols-[1fr_auto_1fr] font-medium text-gray-400 mb-4 xl:mb-8">
                     <div>
                         {match.blueTeam.abbreviation}
                         <span className="text-blue-500 ml-2">({labels.blue[lang]})</span>
@@ -176,15 +176,14 @@ function MatchDetails({
                     <div className="text-right">
                         {match.redTeam.abbreviation}
                         <span className="text-red-500 ml-2">({labels.red[lang]})</span>
-
                     </div>
                 </div>
                 {lanes.map((lane) => {
                     const bluePick = bluePicks.find((pick) => pick.laneId === lane.id);
                     const redPick = redPicks.find((pick) => pick.laneId === lane.id);
                     return (
-                        <div key={lane.id} className="grid grid-cols-[1fr_6fr_1fr] items-center gap-2 py-0.5 xl:py-1">
-                            <div className="flex items-center gap-2 justify-between">
+                        <div key={lane.id} className="grid grid-cols-[1fr_2fr_1fr] md:grid-cols-[1fr_5fr_1fr] items-center gap-2 py-0.5 xl:py-1 mb-4 xl:mb-8">
+                            <div className="flex items-center gap-2 justify-start md:justify-between text-sm xl:text-base">
                                 {bluePick ? (
                                     <>
                                         <Link href={`/heroes/${heroSlug(bluePick.hero.nameEnglish)}`} className="hover:underline">
@@ -195,14 +194,15 @@ function MatchDetails({
                                             alt={bluePick.hero.nameEnglish}
                                             width={60}
                                             height={60}
+                                            className="hidden md:block rounded-sm"
                                         />
                                     </>
                                 ) : (
                                     "-"
                                 )}
                             </div>
-                            <span className="text-sm text-gray-400 text-center">{pickName(lang, lane.nameEnglish, lane.nameChinese)}</span>
-                            <div className="flex items-center gap-2 justify-between text-right">
+                            <span className="text-sm text-gray-400 text-center whitespace-nowrap">{pickName(lang, lane.nameEnglish, lane.nameChinese)}</span>
+                            <div className="flex items-center gap-2 justify-end md:justify-between text-right">
                                 {redPick ? (
                                     <>
                                         <Image
@@ -210,8 +210,9 @@ function MatchDetails({
                                             alt={redPick.hero.nameEnglish}
                                             width={60}
                                             height={60}
+                                            className="hidden md:block rounded-sm"
                                         />
-                                        <Link href={`/heroes/${heroSlug(redPick.hero.nameEnglish)}`} className="hover:underline">
+                                        <Link href={`/heroes/${heroSlug(redPick.hero.nameEnglish)}`} className="hover:underline text-right">
                                             {pickName(lang, redPick.hero.nameEnglish, redPick.hero.nameChinese)}
                                         </Link>
                                     </>
@@ -225,8 +226,8 @@ function MatchDetails({
             </div>
 
             <div>
-                <p className="text-sm font-medium text-gray-500 mb-1 text-center">{labels.bans[lang]}</p>
-                <div className="grid grid-cols-2 gap-2 text-sm">
+                <p className="text-sm font-medium text-amber-300 mb-1 text-center">{labels.bans[lang]}</p>
+                <div className="grid grid-cols-2 gap-8 text-sm xl:text-base">
                     <span>
                         {blueBans.map((ban) => pickName(lang, ban.hero.nameEnglish, ban.hero.nameChinese)).join(", ") || "-"}
                     </span>

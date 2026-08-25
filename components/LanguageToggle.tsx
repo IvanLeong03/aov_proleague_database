@@ -12,7 +12,8 @@ export function LanguageToggle({ current }: { current: Language }) {
     }
 
     return (
-        <div className="flex items-center gap-1 text-sm">
+        <div className="flex items-center text-sm xl:text-base">
+            <span className="block md:hidden mr-2">Language: </span>
             <button
                 type="button"
                 onClick={() => setLanguage("en")}
