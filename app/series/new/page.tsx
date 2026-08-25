@@ -3,6 +3,15 @@ import { prisma } from "@/lib/prisma";
 import { isAdminMode } from "@/lib/admin";
 import { NewSeriesForm } from "./NewSeriesForm";
 
+// This is the only page that doesn't call getLanguage() (no bilingual text), so it's
+// missing the cookies()-read signal every other page uses to tell Next.js "never
+// prerender this at build time." Without it, a build-time prerender attempt renders
+// the shared layout (including NavBar's own Prisma queries) against the database
+// during the build itself, which isn't guaranteed to succeed. force-dynamic removes
+// the ambiguity outright — this page also needs isAdminMode() checked per-request
+// anyway, not baked into a static build artifact.
+export const dynamic = "force-dynamic";
+
 export default async function NewSeriesPage() {
   if (!isAdminMode()) {
     notFound();
