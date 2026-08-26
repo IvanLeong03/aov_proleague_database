@@ -98,7 +98,7 @@ export function PickHistoryTable({ rows, lang }: { rows: PickRow[]; lang: Langua
             <th
                 key={key}
                 onClick={() => toggleSort(key)}
-                className={`cursor-pointer select-none font-normal ${active ? "text-gray-100" : "text-gray-400"}`}
+                className={`cursor-pointer select-none font-normal ${active ? "text-gray-100" : "text-gray-400"} pr-2 md:pr-0`}
             >
                 {label}
                 {active && (sort!.dir === "asc" ? " ▲" : " ▼")}
@@ -122,7 +122,7 @@ export function PickHistoryTable({ rows, lang }: { rows: PickRow[]; lang: Langua
                             in the same game is instantly visible next to the Date/Team/Opponent
                             columns that already identify the match. */}
                         {headerCell("stage", labels.stage[lang])}
-                        <th className="font-normal text-gray-400">{labels.game[lang]}</th>
+                        <th className="font-normal text-gray-400 pr-4 lg:pr-2 xl:pr-0">{labels.game[lang]}</th>
                         {headerCell("team", labels.team[lang])}
                         {headerCell("opponent", labels.opponent[lang])}
                         {headerCell("lane", labels.lane[lang])}
