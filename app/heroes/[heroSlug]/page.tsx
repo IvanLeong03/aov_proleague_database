@@ -211,7 +211,8 @@ export default async function HeroPage({
         const opponentTeam = pick.teamId === pick.match.series.teamAId ? pick.match.series.teamB : pick.match.series.teamA;
         entry.pickRows.push({
             id: pick.id,
-            dateLabel: pick.match.series.date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }),
+            //dateLabel: pick.match.series.date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }),
+            dateLabel: pick.match.series.date.toISOString().slice(0, 10),
             dateSortKey: pick.match.series.date.getTime(),
             stageName: pickName(lang, pick.match.series.stage.nameEnglish, pick.match.series.stage.nameChinese),
             stageOrder: pick.match.series.stage.order,
@@ -235,7 +236,7 @@ export default async function HeroPage({
     });
 
     return (
-        <main className="w-3/5 mx-auto my-8">
+        <main className="w-4/5 mx-auto my-8">
             <section className="space-y-2 mb-16 flex items-start justify-between">
                 <div className="flex flex-col">
                     <h1 className="text-2xl xl:text-3xl font-semibold">{pickName(lang, hero.nameEnglish, hero.nameChinese)}</h1>
@@ -265,8 +266,9 @@ export default async function HeroPage({
                     open={entry.season.isOngoing}
                     className="mt-3 border-b py-4"
                 >
-                    <summary className="cursor-pointer font-medium text-lg ">
+                    <summary className="cursor-pointer font-medium text-lg">
                         {entry.season.competition.shortCode} {entry.season.year} {entry.season.split ?? ""}
+                        <br className="md:hidden" />
                         {entry.season.isOngoing && (
                             <span className="mx-4 rounded-full bg-green-100 px-2 py-0.5 text-sm text-green-700">
                                 {labels.ongoing[lang]}
@@ -326,13 +328,13 @@ function MatchupTable({ rows, lang }: { rows: MatchupEntry[]; lang: Language }) 
         return <p className="mt-1 text-sm text-gray-500">No data yet.</p>;
     }
     return (
-        <table className="mt-1 w-full">
+        <table className="mt-1 w-full text-sm xl:text-base">
             <thead>
                 <tr className="text-left">
-                    <th className="font-normal w-3/5 lg:w-3/4"></th>
-                    <th className="font-normal text-gray-400">{labels.picks[lang]}</th>
-                    <th className="font-normal text-gray-400">{labels.wl[lang]}</th>
-                    <th className="font-normal text-gray-400">{labels.winrate[lang]}</th>
+                    <th className="font-normal w-2/3"></th>
+                    <th className="font-normal text-gray-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.picks[lang]}</th>
+                    <th className="font-normal text-gray-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.wl[lang]}</th>
+                    <th className="font-normal text-gray-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.winrate[lang]}</th>
                 </tr>
             </thead>
             <tbody>
@@ -360,16 +362,16 @@ function StatTable({ rows, lang }: { rows: StatRow[]; lang: Language }) {
     return (
         <table className="mt-1 w-full">
             <thead>
-                <tr className="text-left">
-                    <th className="font-normal w-1/2 lg:w-3/4"></th>
-                    <th className="font-normal text-blue-400">{labels.blue[lang]}</th>
-                    <th className="font-normal text-red-400">{labels.red[lang]}</th>
-                    <th className="font-normal  text-gray-400">{labels.total[lang]}</th>
+                <tr className="text-left text-sm xl:text-base">
+                    <th className="font-normal w-2/3"></th>
+                    <th className="font-normal text-blue-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.blue[lang]}</th>
+                    <th className="font-normal text-red-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.red[lang]}</th>
+                    <th className="font-normal text-gray-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.total[lang]}</th>
                 </tr>
             </thead>
             <tbody>
                 {rows.map((row) => (
-                    <tr key={row.label} className="border-t border-dashed border-gray-700">
+                    <tr key={row.label} className="border-t border-dashed border-gray-700 text-sm xl:text-base">
                         <td className="py-1">{row.label}</td>
                         <td className="py-1">{fmt(row.blue)}</td>
                         <td className="py-1">{fmt(row.red)}</td>

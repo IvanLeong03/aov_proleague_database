@@ -57,7 +57,7 @@ export default async function Home() {
     ]);
 
     return (
-        <main className="w-4/5 mx-auto my-16">
+        <main className="w-9/10 md:w-4/5 mx-auto my-16">
             <h1 className="text-2xl md:text-3xl font-semibold">AOV Pro League Database</h1>
             <p className="mt-2 text-sm text-gray-400">{labels.tagline[lang]}</p>
 
@@ -98,7 +98,7 @@ export default async function Home() {
                                 <li key={s.id}>
                                     <Link
                                         href={`/competitions/${s.season.competition.shortCode}/series/${s.id}`}
-                                        className="flex justify-between items-center rounded-xl px-4 py-3 text-sm xl:text-base bg-gray-600 hover:bg-gray-700"
+                                        className="flex justify-between items-center gap-2 rounded-xl px-4 py-2 xl:py-3 text-sm xl:text-base bg-gray-600 hover:bg-gray-700"
                                     >
                                         <span>
                                             <span className={aWins > bWins ? "font-bold" : "brightness-75"}>{s.teamA.name}</span>
@@ -107,9 +107,10 @@ export default async function Home() {
                                             </span>
                                             <span className={bWins > aWins ? "font-bold" : "brightness-75"}>{s.teamB.name}</span>
                                         </span>
-                                        <span className="text-gray-300">
-                                            {s.season.competition.shortCode} &middot; {pickName(lang, s.stage.nameEnglish, s.stage.nameChinese)}{" "}
-                                            &middot; {s.date.toISOString().slice(0, 10)}
+                                        <span className="text-gray-300 grid grid-cols-1 whitespace-nowrap">
+                                            <span>{s.season.competition.shortCode}</span>
+                                            <span>{pickName(lang, s.stage.nameEnglish, s.stage.nameChinese)}</span>
+                                            <span>{s.date.toISOString().slice(5, 10)}</span>
                                         </span>
                                     </Link>
                                 </li>

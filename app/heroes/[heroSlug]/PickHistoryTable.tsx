@@ -57,6 +57,10 @@ const labels = {
     game: {
         "en": "Game",
         "zh": "場次"
+    },
+    noPicksYet: {
+        "en": "No picks recorded yet",
+        "zh": "未有選用紀錄"
     }
 }
 
@@ -103,7 +107,7 @@ export function PickHistoryTable({ rows, lang }: { rows: PickRow[]; lang: Langua
     }
 
     if (rows.length === 0) {
-        return <p className="mt-1 text-sm text-gray-500">No picks recorded yet.</p>;
+        return <p className="mt-1 text-sm text-gray-500">{labels.noPicksYet[lang]}</p>;
     }
 
     return (
@@ -128,12 +132,12 @@ export function PickHistoryTable({ rows, lang }: { rows: PickRow[]; lang: Langua
                 <tbody>
                     {sorted.map((row) => (
                         <tr key={row.id} className="border-t border-dashed border-gray-700">
-                            <td className="py-1">{row.dateLabel}</td>
-                            <td className="py-1">{row.stageName}</td>
-                            <td className="py-1">{row.gameNumber}</td>
-                            <td className="py-1">{row.teamAbbrev}</td>
-                            <td className="py-1">{row.opponentAbbrev}</td>
-                            <td className="py-1">{row.laneName}</td>
+                            <td className="py-1 pr-4 lg:pr-2 xl:pr-0">{row.dateLabel}</td>
+                            <td className="py-1 pr-4 lg:pr-2 xl:pr-0">{row.stageName}</td>
+                            <td className="py-1 pr-4 lg:pr-2 xl:pr-0">{row.gameNumber}</td>
+                            <td className="py-1 pr-4 lg:pr-2 xl:pr-0">{row.teamAbbrev}</td>
+                            <td className="py-1 pr-4 lg:pr-2 xl:pr-0">{row.opponentAbbrev}</td>
+                            <td className="py-1 pr-4 lg:pr-2 xl:pr-0">{row.laneName}</td>
                             <td className={`py-1 ${row.win ? "text-green-300" : "text-red-300"}`}>{row.win ? "W" : "L"}</td>
                         </tr>
                     ))}

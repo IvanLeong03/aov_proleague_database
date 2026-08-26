@@ -168,7 +168,7 @@ function MostPickedByLane({ entries, lang }: { entries: ReturnType<typeof getMos
                                 <div key={entry.hero.id} className="flex justify-between items-center">
                                     <Link
                                         href={`/heroes/${heroSlug(entry.hero.nameEnglish)}`}
-                                        className={`hover:underline ${i === 0 ? "text-lg font-medium" : "text-sm text-gray-300"}`}
+                                        className={`hover:underline ${i === 0 ? "text-lg xl:text-xl font-medium" : "text-sm xl:text-base text-gray-300"}`}
                                     >
                                         {pickName(lang, entry.hero.nameEnglish, entry.hero.nameChinese)}
                                     </Link>
@@ -213,12 +213,18 @@ function SeriesList({
                                 </span>
                                 vs {opponent.name}
                                 <span className="ml-4 text-gray-400">
-                                    {myWins}-{oppWins}
+                                    ({myWins}-{oppWins})
                                 </span>
                             </span>
-                            <span className="text-gray-300">
-                                {pickName(lang, s.stage.nameEnglish, s.stage.nameChinese)} &middot; {s.date.toISOString().slice(0, 10)}
+                            <span className="grid grid-cols-1 text-gray-300">
+                                <span>
+                                    {pickName(lang, s.stage.nameEnglish, s.stage.nameChinese)}
+                                </span>
+                                <span>
+                                    {s.date.toISOString().slice(5, 10)}
+                                </span>                                
                             </span>
+
                         </Link>
                     </li>
                 );
