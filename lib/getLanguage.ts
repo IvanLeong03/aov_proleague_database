@@ -7,5 +7,5 @@ import type { Language } from "./language";
 // A cookie is sent with every request; localStorage would only be visible client-side.
 export async function getLanguage(): Promise<Language> {
     const cookieStore = await cookies();
-    return cookieStore.get("lang")?.value === "zh" ? "zh" : "en";
+    return cookieStore.get("lang")?.value === "en" ? "en" : "zh";
 }
