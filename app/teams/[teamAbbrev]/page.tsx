@@ -216,7 +216,7 @@ function SeriesList({
                                     ({myWins}-{oppWins})
                                 </span>
                             </span>
-                            <span className="grid grid-cols-1 text-gray-300">
+                            <span className="grid grid-cols-1 text-gray-300 whitespace-nowrap">
                                 <span>
                                     {pickName(lang, s.stage.nameEnglish, s.stage.nameChinese)}
                                 </span>
