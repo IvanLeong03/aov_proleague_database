@@ -38,24 +38,24 @@ export default async function CompetitionPage({
 
     return (
         <main className="w-4/5 mx-auto my-16">
-            <h1 className="text-xl xl:text-2xl font-medium">{competition.name} ({competition.shortCode})</h1>
-            <p className="mt-1 text-gray-400">{competition.region}</p>
+            <h1 className="text-2xl md:text-3xl font-semibold">{competition.name} ({competition.shortCode})</h1>
+            <p className="my-2 text-sm xl:text-base text-gray-400/80">{competition.region}</p>
 
             { competition.seasons.length > 0 && (
-                <h2 className=" mt-8 mb-2 text-lg xl:text-xl">{labels.seasons[lang]}</h2>
+                <h2 className=" mt-8 mb-2 text-lg font-bold">{labels.seasons[lang]}</h2>
             )}
             <ul className="space-y-2">                
                 {competition.seasons.map((season) => (
                     <li key={season.id}>
                         <Link
                             href={`/competitions/${competition.shortCode}/${seasonSlug(season)}`}
-                            className="flex items-center justify-between rounded-2xl p-4 bg-gray-500 hover:bg-gray-600"
+                            className="flex items-center justify-between rounded-2xl p-4 bg-gray-700 hover:bg-gray-700/75"
                         >
                             <span className="text-lg font-medium">
                                 {competition.shortCode} {season.year} {season.split ?? ""}
                             </span>
                             {season.isOngoing && (
-                                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs xl:text-sm text-green-700">
+                                <span className="rounded-full bg-green-200 px-3 py-1 text-sm xl:text-base text-green-700">
                                     {labels.ongoing[lang]}
                                 </span>
                             )}

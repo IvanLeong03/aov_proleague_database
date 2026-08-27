@@ -11,7 +11,7 @@ import { heroSlug } from "@/lib/heroSlug";
 
 const labels = {
     won: {
-        "en": "won",
+        "en": "wins",
         "zh": "獲勝"
     },
     bans: {
@@ -83,27 +83,26 @@ export default async function SeriesPage({
 
     return (
         <main className="w-4/5 mx-auto my-16">
-            <h1 className="text-xl font-semibold">
+            <h1 className="text-xl xl:text-2xl font-medium">
                 {series.teamA.name} vs {series.teamB.name}
             </h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="my-2 text-sm xl:text-base text-gray-400/80">
                 {series.season.competition.shortCode} {series.season.year} {series.season.split ?? ""} &middot;{" "}
                 {pickName(lang, series.stage.nameEnglish, series.stage.nameChinese)} &middot; {series.date.toISOString().slice(0, 10)}
             </p>
-            <p className="text-lg my-2">
+            <p className="text-lg my-4 text-amber-300">
                 {labels.result[lang]}: {series.teamA.abbreviation} {aWins} - {bWins} {series.teamB.abbreviation}
-
             </p>
 
-            <h2 className="mt-6 text-lg font-medium">{labels.gameHistory[lang]}</h2>
+            <h2 className="mt-16 text-lg font-bold">{labels.gameHistory[lang]}</h2>
             {series.matches.length === 0 && <p className="mt-2 text-sm text-gray-500">No matches saved yet.</p>}
-            <ul className="mt-2 space-y-1">
+            <ul className="mt-2 divide-y md:divide-y-2 divide-dashed divide-gray-400">
                 {series.matches.map((match) => (
-                    <li key={match.id} className="border-b px-3 py-4 ">
+                    <li key={match.id} className="px-2 py-3">
                         <div className="flex items-start justify-between">
                             <details className="flex-1">
                                 <summary className="cursor-pointer">
-                                    Game {match.gameNumber}: {match.winnerTeam.name} {labels.won[lang]}
+                                    Game {match.gameNumber}: {match.winnerTeam.abbreviation} {labels.won[lang]}
                                 </summary>
                                 <MatchDetails match={match} lanes={lanes} lang={lang} />
                             </details>
@@ -165,15 +164,15 @@ function MatchDetails({
     const redBans = match.bans.filter((ban) => ban.teamId === match.redTeamId);
 
     return (
-        <div className="mt-3">
+        <div className="mt-3 pb-4">
             <div>
-                <div className="grid grid-cols-[1fr_auto_1fr] font-medium text-gray-400 mb-4 xl:mb-8">
-                    <div>
+                <div className="grid grid-cols-[1fr_auto_1fr] font-medium text-gray-400 my-4 xl:my-8">
+                    <div className="tracking-wide font-semibold">
                         {match.blueTeam.abbreviation}
                         <span className="text-blue-500 ml-2">({labels.blue[lang]})</span>
                     </div>
                     <span />
-                    <div className="text-right">
+                    <div className="text-right tracking-wide font-semibold">
                         {match.redTeam.abbreviation}
                         <span className="text-red-500 ml-2">({labels.red[lang]})</span>
                     </div>
@@ -186,7 +185,7 @@ function MatchDetails({
                             <div className="flex items-center gap-2 justify-start md:justify-between text-sm xl:text-base">
                                 {bluePick ? (
                                     <>
-                                        <Link href={`/heroes/${heroSlug(bluePick.hero.nameEnglish)}`} className="hover:underline">
+                                        <Link href={`/heroes/${heroSlug(bluePick.hero.nameEnglish)}`} className="hover:underline text-base xl:text-lg font-medium">
                                             {pickName(lang, bluePick.hero.nameEnglish, bluePick.hero.nameChinese)}
                                         </Link>
                                         <Image
@@ -201,7 +200,7 @@ function MatchDetails({
                                     "-"
                                 )}
                             </div>
-                            <span className="text-sm text-gray-400 text-center whitespace-nowrap">{pickName(lang, lane.nameEnglish, lane.nameChinese)}</span>
+                            <span className="text-sm xl:text-base font-medium text-gray-400 text-center whitespace-nowrap">{pickName(lang, lane.nameEnglish, lane.nameChinese)}</span>
                             <div className="flex items-center gap-2 justify-end md:justify-between text-right">
                                 {redPick ? (
                                     <>
@@ -225,9 +224,9 @@ function MatchDetails({
                 })}
             </div>
 
-            <div>
-                <p className="text-sm font-medium text-amber-300 mb-1 text-center">{labels.bans[lang]}</p>
-                <div className="grid grid-cols-2 gap-8 text-sm xl:text-base">
+            <div className="mt-4">
+                <p className="text-sm font-bold text-amber-300 mb-1 text-center">{labels.bans[lang]}</p>
+                <div className="grid grid-cols-2 gap-8 text-sm xl:text-base text-gray-300/80">
                     <span>
                         {blueBans.map((ban) => pickName(lang, ban.hero.nameEnglish, ban.hero.nameChinese)).join(", ") || "-"}
                     </span>

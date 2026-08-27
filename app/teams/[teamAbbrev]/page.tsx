@@ -23,7 +23,7 @@ type TeamSeriesRow = Prisma.SeriesGetPayload<{
 
 const labels = {
     mostPicked: {
-        "en": "Most picked characters:",
+        "en": "Most picked characters",
         "zh": "最常選用"
     },
     record: {
@@ -110,7 +110,7 @@ export default async function TeamPage({
                 <section key={entry.season.id} className="mt-8 mb-24">
                     <h2 className="text-lg font-semibold">
                         {entry.season.competition.name} {entry.season.year} {entry.season.split ?? ""}
-                        <span className="mx-4 rounded-full bg-green-200 px-2 py-0.5 text-sm text-green-600">
+                        <span className="mx-4 rounded-full bg-green-200 px-3 py-1 text-sm xl:text-base text-green-700">
                             {labels.ongoing[lang]}
                         </span>
                     </h2>
@@ -140,9 +140,9 @@ export default async function TeamPage({
                                     </p>
                                 </summary>
                                 <div className="my-4">
-                                    <p className="my-2">{labels.mostPicked[lang]}:</p>
+                                    <p className="my-2 font-bold">{labels.mostPicked[lang]}:</p>
                                     <MostPickedByLane entries={entry.mostPickedByLane} lang={lang} />
-                                    <p className="mt-8 mb-2">{labels.matchHistory[lang]}</p>
+                                    <p className="mt-8 mb-2 font-bold">{labels.matchHistory[lang]}</p>
                                     <SeriesList series={entry.series} teamId={teamId} lang={lang} />
                                 </div>
                             </details>
@@ -156,10 +156,10 @@ export default async function TeamPage({
 
 function MostPickedByLane({ entries, lang }: { entries: ReturnType<typeof getMostPickedByLane>; lang: Language }) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 xl:gap-8">
             {entries.map(({ lane, topThree }) => (
-                <div key={lane.id} className="rounded-xl bg-gray-800 px-3 py-2">
-                    <p className="text-sm text-gray-400 mb-2">{pickName(lang, lane.nameEnglish, lane.nameChinese)}</p>
+                <div key={lane.id} className="rounded-xl bg-gray-600 px-3 py-2 text-gray-400">
+                    <p className="text-sm text-gray-200/80 mb-2 font-semibold">{pickName(lang, lane.nameEnglish, lane.nameChinese)}</p>
                     {topThree.length === 0 ? (
                         <span className="text-gray-400">—</span>
                     ) : (
@@ -168,11 +168,11 @@ function MostPickedByLane({ entries, lang }: { entries: ReturnType<typeof getMos
                                 <div key={entry.hero.id} className="flex justify-between items-center">
                                     <Link
                                         href={`/heroes/${heroSlug(entry.hero.nameEnglish)}`}
-                                        className={`hover:underline ${i === 0 ? "text-lg xl:text-xl font-medium" : "text-sm xl:text-base text-gray-300"}`}
+                                        className={`hover:underline ${i === 0 ? "text-lg xl:text-xl font-medium text-gray-100" : "text-sm xl:text-base"}`}
                                     >
                                         {pickName(lang, entry.hero.nameEnglish, entry.hero.nameChinese)}
                                     </Link>
-                                    <span className={i === 0 ? "text-2xl text-gray-100" : "text-sm text-gray-400"}>
+                                    <span className={i === 0 ? "text-2xl text-gray-100" : "text-sm"}>
                                         {entry.count}
                                     </span>
                                 </div>
@@ -205,18 +205,18 @@ function SeriesList({
                     <li key={s.id}>
                         <Link
                             href={`/competitions/${s.season.competition.shortCode}/series/${s.id}`}
-                            className="flex justify-between items-center rounded-xl px-4 py-2 text-sm bg-gray-600 hover:bg-gray-700"
+                            className="flex justify-between items-center gap-2 rounded-2xl px-4 py-2 text-sm bg-gray-700 hover:bg-gray-700/75"
                         >
-                            <span>
+                            <span className="text-sm xl:text-base">
                                 <span className={`${result === "W" ? "text-green-300" : "text-red-300"} mr-1 font-semibold`}>
                                     {result}
                                 </span>
                                 vs {opponent.name}
-                                <span className="ml-4 text-gray-400">
+                                <span className="ml-4 text-gray-400 whitespace-nowrap">
                                     ({myWins}-{oppWins})
                                 </span>
                             </span>
-                            <span className="grid grid-cols-1 text-gray-300 whitespace-nowrap">
+                            <span className="grid grid-cols-1 text-gray-300 whitespace-nowrap text-right">
                                 <span>
                                     {pickName(lang, s.stage.nameEnglish, s.stage.nameChinese)}
                                 </span>

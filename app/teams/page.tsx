@@ -41,13 +41,13 @@ export default async function TeamsPage() {
 
             {byRegion.map(({ region, teams: regionTeams }) => (
                 <section key={region} className="mb-24">
-                    <h2 className="text-lg font-semibold text-gray-400">{region} {regionToLeague[region]}</h2>
-                    <ul className="my-8 grid grid-cols-1 lg:grid-cols-3 gap-y-16">
+                    <h2 className="text-lg font-semibold text-gray-400/80">{region} {regionToLeague[region]}</h2>
+                    <ul className="my-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {regionTeams.map((team) => (
                             <li key={team.id}>
                                 <Link
                                     href={`/teams/${team.abbreviation}`}
-                                    className="block w-2/3 mx-auto"
+                                    className="block mx-auto"
                                 >
                                     <TeamCard teamName={team.name} teamAbbrev={team.abbreviation}/>
                                 </Link>

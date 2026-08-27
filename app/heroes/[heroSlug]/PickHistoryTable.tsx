@@ -98,7 +98,7 @@ export function PickHistoryTable({ rows, lang }: { rows: PickRow[]; lang: Langua
             <th
                 key={key}
                 onClick={() => toggleSort(key)}
-                className={`cursor-pointer select-none font-normal ${active ? "text-gray-100" : "text-gray-400"} pr-2 md:pr-0`}
+                className={`cursor-pointer select-none font-normal ${active ? "text-gray-200 font-semibold" : "text-gray-400"} pr-2 md:pr-0`}
             >
                 {label}
                 {active && (sort!.dir === "asc" ? " ▲" : " ▼")}
@@ -112,7 +112,7 @@ export function PickHistoryTable({ rows, lang }: { rows: PickRow[]; lang: Langua
 
     return (
         <div className="mt-1 overflow-x-auto">
-            <table className="w-full whitespace-nowrap text-sm xl:text-base">
+            <table className="w-full whitespace-nowrap text-sm xl:text-base tracking-tight md:tracking-normal">
                 <thead>
                     <tr className="text-left">
                         {headerCell("date", labels.date[lang])}

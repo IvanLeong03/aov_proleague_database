@@ -22,18 +22,18 @@ export function HeroBrowser({ byClass, lang }: { byClass: ClassGroup[]; lang: La
                     <button
                         key={group.cls}
                         onClick={() => setSelected(group.cls)}
-                        className={`py-1 whitespace-nowrap hover:text-white ${selected === group.cls ? "text-teal-400 border-b-2 border-teal-400" : "text-white/80"}`}
+                        className={`py-1 whitespace-nowrap hover:text-white ${selected === group.cls ? "text-amber-300 border-b-2 border-amber-300 font-semibold" : "text-white/80"}`}
                     >
                         {classLabel(lang, group.cls)}
                     </button>
                 ))}
             </div>
-            <div className="my-8 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+            <div className="my-8 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-x-4 gap-y-4 md:gap-y-8">
                 {active.heroes.map((hero) => (                    
                     <Link 
                         key={hero.id} 
                         href={`/heroes/${heroSlug(hero.nameEnglish)}`}
-                        className="rounded-2xl p-8 border border-black"
+                        className="rounded-2xl p-4 border border-black"
                     >
                         <HeroCard nameEnglish={hero.nameEnglish} displayName={pickName(lang, hero.nameEnglish, hero.nameChinese)} />
                     </Link>                    

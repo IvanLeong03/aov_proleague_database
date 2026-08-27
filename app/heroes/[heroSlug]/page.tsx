@@ -240,7 +240,7 @@ export default async function HeroPage({
             <section className="space-y-2 mb-16 flex items-start justify-between">
                 <div className="flex flex-col">
                     <h1 className="text-2xl xl:text-3xl font-semibold">{pickName(lang, hero.nameEnglish, hero.nameChinese)}</h1>
-                    <p className="text-base xl:text-lg text-gray-200 mt-4">
+                    <p className="text-base xl:text-lg text-gray-300/80 mt-4">
                         {lang === "zh" ? hero.nameEnglish : hero.nameChinese}
                     </p>
                 </div>
@@ -250,91 +250,98 @@ export default async function HeroPage({
                         alt={pickName(lang, hero.nameEnglish, hero.nameChinese)}
                         width={144}
                         height={144}
-                        className="rounded-xl"
+                        className="rounded-lg"
                     />
                 </div>
 
             </section>
 
-            <h2 className="text-xl xl:text-2xl font-semibold mb-2">{labels.statsbycompseason[lang]}</h2>
+            <h2 className="text-lg font-bold mb-2">{labels.statsbycompseason[lang]}</h2>
 
-            {seasons.length === 0 && <p className="my-8 text-base xl:text-lg text-gray-200">{labels.noRecord[lang]}</p>}
+            {seasons.length === 0 && <p className="my-8 text-base xl:text-lg text-gray-400/75">{labels.noRecord[lang]}</p>}
 
-            {seasons.map((entry) => (
-                <details
-                    key={entry.season.id}
-                    open={entry.season.isOngoing}
-                    className="mt-3 border-b py-4"
-                >
-                    <summary className="cursor-pointer font-medium text-lg">
-                        {entry.season.competition.shortCode} {entry.season.year} {entry.season.split ?? ""}
-                        <br className="md:hidden" />
-                        {entry.season.isOngoing && (
-                            <span className="mx-4 rounded-full bg-green-100 px-2 py-0.5 text-sm text-green-700">
-                                {labels.ongoing[lang]}
-                            </span>
-                        )}
-                    </summary>
-
-                    <div className="mt-2 mx-4 text-gray-300">
-                        <p>{labels.totalpicks[lang]}: {entry.wins + entry.losses}</p>
-                        <p>{labels.winrate[lang]}: {(entry.wins / (entry.wins + entry.losses) * 100).toFixed(2)}%</p>
-                        <p>{labels.bans[lang]}: {entry.bans}</p>
-                    </div>
-
-                    <details className="group mt-2 mx-2">
-                        <summary className="cursor-pointer text-gray-400 text-sm">
-                            <span className="group-open:hidden">{labels.viewDetails[lang]}</span>
-                            <span className="hidden group-open:inline">{labels.hideDetails[lang]}</span>
+            <section className="divide-y divide-dashed">
+                {seasons.map((entry) => (
+                    <details
+                        key={entry.season.id}
+                        open={entry.season.isOngoing}
+                        className="py-4"
+                    >
+                        <summary className="cursor-pointer font-medium text-lg items-center">
+                            {entry.season.competition.shortCode} {entry.season.year} {entry.season.split ?? ""}
+                            <br className="md:hidden" />
+                            {entry.season.isOngoing && (
+                                <span className="mx-4 xl:mx-8 rounded-full bg-green-200 px-3 py-1 text-sm xl:text-base text-green-700 translate-y-1">
+                                    {labels.ongoing[lang]}
+                                </span>
+                            )}
                         </summary>
 
-                        <div className="mt-4 mb-16">
-                            <h4 className="text-sm font-bold">{labels.byLane[lang]}</h4>
-                            <StatTable
-                                rows={Array.from(entry.byPosition.entries()).map(([label, v]) => ({ label, ...v })).sort((a, b) => totalGames(b) - totalGames(a) || totalWins(b) - totalWins(a))}
-                                lang={lang}
-                            />
+                        <div className="my-2 mx-4 w-64 text-gray-300 rounded-xl bg-gray-700/80 px-2 pt-1 grid grid-cols-2 space-y-1">
+                            <span>{labels.totalpicks[lang]}:</span>
+                            <span>{entry.wins + entry.losses}</span>
+                            <span>{labels.winrate[lang]}:</span>
+                            <span>{(entry.wins / (entry.wins + entry.losses) * 100).toFixed(2)}%</span>
+                            <span>{labels.bans[lang]}:</span>
+                            <span>{entry.bans}</span>
                         </div>
 
-                        <div className="mb-16">
-                            <h4 className="text-sm font-bold">{labels.byTeam[lang]}</h4>
-                            <StatTable
-                                rows={Array.from(entry.byTeam.entries()).map(([label, v]) => ({ label, ...v })).sort((a, b) => totalGames(b) - totalGames(a) || totalWins(b) - totalWins(a))}
-                                lang={lang}
-                            />
-                        </div>
+                        <details className="group mt-2 mx-2">
+                            <summary className="cursor-pointer text-gray-400 text-sm">
+                                <span className="group-open:hidden">{labels.viewDetails[lang]}</span>
+                                <span className="hidden group-open:inline">{labels.hideDetails[lang]}</span>
+                            </summary>
 
-                        <div className="mb-16">
-                            <h4 className="text-sm font-bold">{labels.frequentMatchups[lang]}</h4>
-                            <MatchupTable
-                                rows={Array.from(entry.matchupCounts.values()).sort((a, b) => b.count - a.count || b.wins - a.wins).slice(0, 3)}
-                                lang={lang}
-                            />
-                        </div>
+                            <div className="mt-4 mb-16">
+                                <h4 className="text-sm xl:text-base font-bold">{labels.byLane[lang]}</h4>
+                                <StatTable
+                                    rows={Array.from(entry.byPosition.entries()).map(([label, v]) => ({ label, ...v })).sort((a, b) => totalGames(b) - totalGames(a) || totalWins(b) - totalWins(a))}
+                                    lang={lang}
+                                />
+                            </div>
 
-                        <div className="mb-16">
-                            <h4 className="text-sm font-bold mb-2">{labels.allPicks[lang]}</h4>
-                            <PickHistoryTable rows={entry.pickRows} lang={lang} />
-                        </div>
+                            <div className="mb-16">
+                                <h4 className="text-sm xl:text-base font-bold">{labels.byTeam[lang]}</h4>
+                                <StatTable
+                                    rows={Array.from(entry.byTeam.entries()).map(([label, v]) => ({ label, ...v })).sort((a, b) => totalGames(b) - totalGames(a) || totalWins(b) - totalWins(a))}
+                                    lang={lang}
+                                />
+                            </div>
+
+                            <div className="mb-16">
+                                <h4 className="text-sm xl:text-base font-bold">{labels.frequentMatchups[lang]}</h4>
+                                <MatchupTable
+                                    rows={Array.from(entry.matchupCounts.values()).sort((a, b) => b.count - a.count || b.wins - a.wins).slice(0, 3)}
+                                    lang={lang}
+                                />
+                            </div>
+
+                            <div className="mb-16">
+                                <h4 className="text-sm xl:text-base font-bold mb-4">{labels.allPicks[lang]}</h4>
+                                <PickHistoryTable rows={entry.pickRows} lang={lang} />
+                            </div>
+                        </details>
                     </details>
-                </details>
-            ))}
+                ))}
+
+            </section>
+            
         </main>
     );
 }
 
 function MatchupTable({ rows, lang }: { rows: MatchupEntry[]; lang: Language }) {
     if (rows.length === 0) {
-        return <p className="mt-1 text-sm text-gray-500">No data yet.</p>;
+        return <p className="mt-1 text-sm text-gray-400/75">No data yet.</p>;
     }
     return (
         <table className="mt-1 w-full text-sm xl:text-base">
             <thead>
-                <tr className="text-left">
-                    <th className="font-normal w-2/3"></th>
-                    <th className="font-normal text-gray-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.picks[lang]}</th>
-                    <th className="font-normal text-gray-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.wl[lang]}</th>
-                    <th className="font-normal text-gray-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.winrate[lang]}</th>
+                <tr className="text-left text-gray-400">
+                    <th className="w-2/3"></th>
+                    <th className="w-1/9 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.picks[lang]}</th>
+                    <th className="w-1/9 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.wl[lang]}</th>
+                    <th className="w-1/9 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.winrate[lang]}</th>
                 </tr>
             </thead>
             <tbody>
@@ -360,18 +367,18 @@ function StatTable({ rows, lang }: { rows: StatRow[]; lang: Language }) {
     const totalRed = sum(rows.map((row) => row.red));
 
     return (
-        <table className="mt-1 w-full">
+        <table className="mt-1 w-full text-sm xl:text-base">
             <thead>
-                <tr className="text-left text-sm xl:text-base">
-                    <th className="font-normal w-2/3"></th>
-                    <th className="font-normal text-blue-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.blue[lang]}</th>
-                    <th className="font-normal text-red-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.red[lang]}</th>
-                    <th className="font-normal text-gray-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.total[lang]}</th>
+                <tr className="text-left">
+                    <th className="w-2/3"></th>
+                    <th className="w-1/9 text-blue-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.blue[lang]}</th>
+                    <th className="w-1/9 text-red-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.red[lang]}</th>
+                    <th className="w-1/9 text-gray-400 pr-4 lg:pr-2 xl:pr-0 whitespace-nowrap">{labels.total[lang]}</th>
                 </tr>
             </thead>
             <tbody>
                 {rows.map((row) => (
-                    <tr key={row.label} className="border-t border-dashed border-gray-700 text-sm xl:text-base">
+                    <tr key={row.label} className="border-t border-dashed border-gray-700">
                         <td className="py-1">{row.label}</td>
                         <td className="py-1">{fmt(row.blue)}</td>
                         <td className="py-1">{fmt(row.red)}</td>

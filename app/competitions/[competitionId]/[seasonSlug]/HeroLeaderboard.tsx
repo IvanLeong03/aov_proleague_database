@@ -20,7 +20,7 @@ export function HeroLeaderboard({
         return <p className="my-8 text-gray-500">{labels.noData[lang]}</p>;
     }
     return (
-        <ol className="mt-1 space-y-1">
+        <ol className="mt-1 space-y-1 divide-y divide-dashed divide-gray-700">
             {rows.map((row, i) => (
                 <li key={row.hero.id} className="flex justify-between text-lg">
                     <span>

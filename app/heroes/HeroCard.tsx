@@ -7,13 +7,17 @@ export function HeroCard({ nameEnglish, displayName }: { nameEnglish: string; di
 
     return (
         <div className="flex flex-col gap-2 items-center justify-center">
-            <Image
-                src={`/hero_icons/${nameEnglish.toLowerCase().replace("'","").replace(" ", "")}.jpg`}
-                alt={displayName}
-                width={100}
-                height={100}
-            />
-            <p className="text-center text-md">{displayName}</p>
+            <div className="overflow-hidden">
+                <Image
+                    src={`/hero_icons/${nameEnglish.toLowerCase().replace("'","").replace(" ", "")}.jpg`}
+                    alt={displayName}
+                    width={120}
+                    height={120}
+                    className="object-contain hover:scale-105 transition-transform duration-300"
+                />
+            </div>
+            
+            <p className="text-center">{displayName}</p>
         </div>
 
     )

@@ -23,7 +23,7 @@ export default async function HeroesPage() {
 
     return (
         <main className="w-4/5 mx-auto my-16">
-            <h1 className="text-xl xl:text-2xl font-bold">{labels.heroes[lang]}</h1>
+            <h1 className="text-xl xl:text-2xl font-bold mb-4">{labels.heroes[lang]}</h1>
             <HeroBrowser byClass={byClass} lang={lang} />
         </main>
     );

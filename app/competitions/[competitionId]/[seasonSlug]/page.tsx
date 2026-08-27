@@ -134,10 +134,10 @@ export default async function SeasonPage({
             <Link href={`/competitions/${season.competition.shortCode}`} className="text-sm text-gray-500 hover:underline">
                 &larr; {season.competition.shortCode}
             </Link>
-            <h1 className="mt-1 flex items-center gap-4 xl:gap-8 text-xl xl:text-2xl font-bold">
+            <h1 className="mt-1 flex items-center gap-4 xl:gap-8 text-2xl md:text-3xl font-semibold">
                 {season.competition.name} {season.year} {season.split ?? ""}
                 {season.isOngoing && (
-                    <span className="rounded-full bg-green-200 px-2 py-0.5 text-xs xl:text-sm text-green-700">{labels.ongoing[lang]}</span>
+                    <span className="rounded-full bg-green-200 px-3 py-1 text-sm xl:text-base text-green-700">{labels.ongoing[lang]}</span>
                 )}
             </h1>
 
@@ -173,9 +173,9 @@ export default async function SeasonPage({
                 
             </div>
 
-            <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-24">
+            <div className="my-8 grid grid-cols-1 lg:grid-cols-2 gap-16 xl:gap-24">
                 <section>
-                    <h2 className="text-lg font-semibold">{labels.standings[lang]}</h2>
+                    <h2 className="text-lg font-bold">{labels.standings[lang]}</h2>
                     <p className="mt-1 text-xs xl:text-sm text-gray-400">
                         {labels.standingsDesc[lang]}
                     </p>
@@ -189,7 +189,10 @@ export default async function SeasonPage({
                         </thead>
                         <tbody>
                             {standings.map(({ team, record }) => (
-                                <tr key={team.id} className="border-t border-dotted border-white/60">
+                                <tr
+                                    key={team.id}
+                                    className="odd:bg-white/10"
+                                >
                                     <td className="py-1">
                                         <Link
                                             href={`/teams/${team.abbreviation}`} 
@@ -199,10 +202,10 @@ export default async function SeasonPage({
                                         </Link>
                                         {qualifyThreshold !== null && record.seriesWins >= qualifyThreshold && <span className="text-green-300 mx-1">(Q)</span>}
                                     </td>
-                                    <td className="py-1">
+                                    <td className="py-1 tracking-wide font-medium">
                                         {record.seriesWins}-{record.seriesLosses}
                                     </td>
-                                    <td className="py-1">
+                                    <td className="py-1 text-white/70">
                                         {record.gameWins}-{record.gameLosses}
                                     </td>
                                 </tr>
@@ -212,7 +215,7 @@ export default async function SeasonPage({
                 </section>
 
                 <section>
-                    <h2 className="text-lg font-semibold">{labels.heroStats[lang]}</h2>
+                    <h2 className="text-lg font-bold">{labels.heroStats[lang]}</h2>
                     <div className="grid grid-cols-2 mt-4 gap-8">
                         <div className="pr-4">
                             <h3 className="font-medium text-gray-400">{labels.mostPicks[lang]}</h3>
@@ -236,51 +239,58 @@ export default async function SeasonPage({
                         </div>
                     </div>                    
                 </section>
+
+                <section>
+                    <h2 className="text-lg font-bold">{labels.fixtures[lang]}</h2>
+                    {season.series.length === 0 && <p className="my-4 text-gray-500">{labels.noMatches[lang]}</p>}
+                    {groupByStage(season.series).map(({ stage, series }) => (
+                        <div key={stage.id} className="my-8">
+                            <h3 className="font-semibold text-gray-400 my-2">{pickName(lang, stage.nameEnglish, stage.nameChinese)}</h3>
+
+                            <ul className="my-2 space-y-1">
+                                {groupByDate(series).map(({ date, series }) => (
+                                    <div key={date.toISOString()} className="py-4">
+                                        <h3 className="my-2 text-sm font-semibold text-gray-500" >{date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })}</h3>
+                                        <ul className="space-y-2 divide-y divide-dashed divide-gray-600/80">
+                                            {series.map((s) => {
+                                                const aWins = s.matches.filter((m) => m.winnerTeamId === s.teamAId).length;
+                                                const bWins = s.matches.filter((m) => m.winnerTeamId === s.teamBId).length;
+                                                return (
+                                                    <li key={s.id} className="py-2">
+                                                        <Link
+                                                            href={`/competitions/${season.competition.shortCode}/series/${s.id}`}
+                                                        >
+                                                            <span className="grid grid-cols-[3fr_1fr_3fr]">
+                                                                <span className={`${aWins > bWins ? "font-bold" : "brightness-60"} inline-block`}>
+                                                                    {s.teamA.name}
+                                                                </span>
+                                                                
+                                                                <span className="text-center tracking-wider">
+                                                                    {aWins}:{bWins}  
+                                                                </span>
+                                                                <span className={`${bWins > aWins ? "font-bold" : "brightness-60"} text-right`}>
+                                                                    {s.teamB.name}
+                                                                </span>                                                        
+                                                            </span>                                                    
+                                                        </Link>
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>                                
+                                    </div>
+                                ))}
+
+                            </ul>
+                        </div>
+                    ))}
+                </section>
+                <section>
+                    {/* remaining space for playoff bracket */}
+                    {/* swap this with hero stats leaderboard in the future*/}
+                </section>
             </div>
 
-            <h2 className="mt-16 text-lg font-semibold">{labels.fixtures[lang]}</h2>
-            {season.series.length === 0 && <p className="my-4 text-gray-500">{labels.noMatches[lang]}</p>}
-            {groupByStage(season.series).map(({ stage, series }) => (
-                <div key={stage.id} className="my-8">
-                    <h3 className="font-medium text-gray-400 my-2">{pickName(lang, stage.nameEnglish, stage.nameChinese)}</h3>
-
-                    <ul className="my-2 space-y-1">
-                        {groupByDate(series).map(({ date, series }) => (
-                            <div key={date.toISOString()} className="py-4">
-                                <h3 className="my-2 text-sm font-semibold text-gray-200" >{date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })}</h3>
-                                <ul className="space-y-2">
-                                    {series.map((s) => {
-                                        const aWins = s.matches.filter((m) => m.winnerTeamId === s.teamAId).length;
-                                        const bWins = s.matches.filter((m) => m.winnerTeamId === s.teamBId).length;
-                                        return (
-                                            <li key={s.id}>
-                                                <Link
-                                                    href={`/competitions/${season.competition.shortCode}/series/${s.id}`}
-                                                    className="flex justify-between py-2 hover:bg-gray-600"
-                                                >
-                                                    <span className="flex justify-center">
-                                                        <span className={`${aWins > bWins ? "font-bold" : "brightness-75"} inline-block w-32 xl:w-60`}>
-                                                            {s.teamA.name}
-                                                        </span>
-                                                        
-                                                        <span className="mx-1 xl:mx-2 inline-block">
-                                                            {aWins}:{bWins}  
-                                                        </span>
-                                                        <span className={`${bWins > aWins ? "font-bold" : "brightness-75"} inline-block w-32 xl:w-60 text-right`}>
-                                                            {s.teamB.name}
-                                                        </span>                                                        
-                                                    </span>                                                    
-                                                </Link>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>                                
-                            </div>
-                        ))}
-
-                    </ul>
-                </div>
-            ))}
+            
         </main>
     );
 }

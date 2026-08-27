@@ -21,6 +21,10 @@ const labels = {
     heroesDesc: { en: "Pick rates, ban rates, and stats by lane and matchup.", zh: "查看英雄的選用率、禁用率及各路線對戰數據" },
     competitions: { en: "Competitions", zh: "賽事" },
     competitionsDesc: { en: "Standings, champions, and playoff results by season.", zh: "查看各賽季的排名、冠軍與季後賽結果" },
+    pageTitle: {
+        en: "AOV Pro League Database",
+        zh: "傳說對決職業電競資料庫"
+    }
 };
 
 export default async function Home() {
@@ -58,8 +62,8 @@ export default async function Home() {
 
     return (
         <main className="w-9/10 md:w-4/5 mx-auto my-16">
-            <h1 className="text-2xl md:text-3xl font-semibold">AOV Pro League Database</h1>
-            <p className="mt-2 text-sm text-gray-400">{labels.tagline[lang]}</p>
+            <h1 className="text-2xl md:text-3xl font-semibold">{labels.pageTitle[lang]}</h1>
+            <p className="mt-2 text-sm xl:text-base text-gray-400">{labels.tagline[lang]}</p>
 
             <section className="my-8">
                 <h2 className="text-lg font-semibold">{labels.ongoing[lang]}</h2>
@@ -76,7 +80,7 @@ export default async function Home() {
                                 <p className="font-medium">
                                     {season.competition.name} {season.year} {season.split ?? ""}
                                 </p>
-                                <span className="mt-1 inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700">
+                                <span className="mt-1 inline-block rounded-full bg-green-200 px-3 py-1 text-sm xl:text-base text-green-700">
                                     {labels.ongoingBadge[lang]}
                                 </span>
                             </Link>

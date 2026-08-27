@@ -74,10 +74,10 @@ export default async function SeasonHeroStatsPage({
             >
                 &larr; {season.competition.shortCode} {season.year} {season.split ?? ""}
             </Link>
-            <h1 className="mt-1 text-xl font-medium">
+            <h1 className="mt-2 text-lg xl:text-xl font-bold">
                 {statType === "bans" ? labels.mostBans[lang] : labels.mostPicks[lang]} &mdash; {labels.completeRank[lang]}
             </h1>
-            <div className="mt-6 max-w-md">
+            <div className="mt-8 max-w-xl">
                 <HeroLeaderboard rows={rows} lang={lang} />
             </div>
         </main>
