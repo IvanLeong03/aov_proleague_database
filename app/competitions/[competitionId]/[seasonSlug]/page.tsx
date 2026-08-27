@@ -134,10 +134,10 @@ export default async function SeasonPage({
             <Link href={`/competitions/${season.competition.shortCode}`} className="text-sm text-gray-500 hover:underline">
                 &larr; {season.competition.shortCode}
             </Link>
-            <h1 className="mt-1 flex items-center gap-4 xl:gap-8 text-2xl md:text-3xl font-semibold">
+            <h1 className="mt-1 flex flex-col md:flex-row items-start md:items-center gap-4 xl:gap-8 text-2xl md:text-3xl font-semibold">
                 {season.competition.name} {season.year} {season.split ?? ""}
                 {season.isOngoing && (
-                    <span className="rounded-full bg-green-200 px-3 py-1 text-sm xl:text-base text-green-700">{labels.ongoing[lang]}</span>
+                    <span className="rounded-full bg-green-200 px-3 py-1 text-sm xl:text-base text-green-700 whitespace-nowrap">{labels.ongoing[lang]}</span>
                 )}
             </h1>
 

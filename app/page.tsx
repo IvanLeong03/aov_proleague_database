@@ -63,10 +63,10 @@ export default async function Home() {
     return (
         <main className="w-9/10 md:w-4/5 mx-auto my-16">
             <h1 className="text-2xl md:text-3xl font-semibold">{labels.pageTitle[lang]}</h1>
-            <p className="mt-2 text-sm xl:text-base text-gray-400">{labels.tagline[lang]}</p>
+            <p className="mt-2 text-sm xl:text-base text-gray-400/80">{labels.tagline[lang]}</p>
 
             <section className="my-8">
-                <h2 className="text-lg font-semibold">{labels.ongoing[lang]}</h2>
+                <h2 className="text-lg font-bold">{labels.ongoing[lang]}</h2>
                 {ongoingSeasons.length === 0 ? (
                     <p className="mt-2 text-sm text-gray-500">{labels.noOngoing[lang]}</p>
                 ) : (
@@ -90,7 +90,7 @@ export default async function Home() {
             </section>
 
             <section className="my-8">
-                <h2 className="text-lg font-semibold">{labels.recentResults[lang]}</h2>
+                <h2 className="text-lg font-bold">{labels.recentResults[lang]}</h2>
                 {recentSeries.length === 0 ? (
                     <p className="mt-2 text-sm text-gray-500">{labels.noResults[lang]}</p>
                 ) : (
@@ -106,7 +106,7 @@ export default async function Home() {
                                     >
                                         <span>
                                             <span className={aWins > bWins ? "font-bold" : "brightness-75"}>{s.teamA.name}</span>
-                                            <span className="mx-2">
+                                            <span className="mx-2 tracking-wider">
                                                 {aWins}:{bWins}
                                             </span>
                                             <span className={bWins > aWins ? "font-bold" : "brightness-75"}>{s.teamB.name}</span>
@@ -125,7 +125,7 @@ export default async function Home() {
             </section>
 
             <section className="mt-24">
-                <h2 className="text-lg font-semibold">{labels.browse[lang]}</h2>
+                <h2 className="text-lg font-bold">{labels.browse[lang]}</h2>
                 <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Link href="/teams" className="rounded-xl bg-gray-800 px-4 py-4 hover:bg-gray-700">
                         <p className="font-medium">{labels.teams[lang]}</p>

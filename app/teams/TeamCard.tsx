@@ -11,7 +11,7 @@ export function TeamCard({ teamName, teamAbbrev }: { teamName: string, teamAbbre
                     className="object-contain"
                 />
             </div>
-            <div className="w-full bg-gray-900 text-center py-1">
+            <div className="w-full bg-gray-900 text-center py-1 rounded-b-xl">
                 {teamName} ({teamAbbrev})
             </div>
         </div>
